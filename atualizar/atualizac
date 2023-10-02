@@ -1,0 +1,66 @@
+######################################################################
+## Parametros para serem usados no atualiza.sh                      ##
+######################################################################
+### NOME DA EMPRESA  ###
+EMPRESA=
+### USA BANCO (S/N) ###
+BANCO=n 
+### - NOTA 9 DIGITOS (S/N) - ###
+DIG9=n
+### PASTA DO SISTEMA ###
+destino="/u"
+### DIRETORIO DA BASE DE DADOS"""
+base=/sav/dados_jisam
+#BASE2=
+#BASE3=
+
+### CONFIGURACAO PARA O SISTEMA EM ISCOBOL ###
+sistema=iscobol
+### Versao do iscobol class para iscobol ate 2019, class20 apos 2020 #
+#class=-class
+#VERCLASS=IS2018
+#class=-class9
+#VERCLASS=IS2020C9
+class=-class20
+VERCLASS=IS2020
+###
+### Diretorio para o iscobol
+exec=/u/sav/classes
+telas=/u/sav/tel_isc
+xml=/u/sav/xml
+####################################################################
+# # CONFIGURACAO PARA O SISTEMA EM MICROFOCUS ###
+#sistema=cobol
+#class=-6
+###
+### Diretorio para o Microfocus###
+#exec=/u/sav/int
+#telas=/u/sav/tel
+###
+#### DIRETORIO DA BASE DE DADOS###
+#base="/sav/dados"
+#BASE2=""
+#BASE3=""
+####################################################################
+### Diretorio de trabalho para o atualizador ###
+pasta="/sav/tools"
+progs=/progs
+olds=/olds
+logs=/logs
+backup=/backup
+####################################################################
+### Nome de arquivo de trabalho ###
+INI="backup"
+
+##############( TRANSPC )###########################################
+### Nome de arquivo de atualizacao ###
+SAVATU1=tempSAV_"$VERCLASS'_classA_
+SAVATU2=tempSAV_"$VERCLASS"_classB_
+SAVATU3=tempSAV_"$VERCLASS"_tel_isc_
+SAVATU4=tempSAV_"$VERCLASS"_xml_ 
+
+####################################################################
+#### ISAM #####
+#SAVATU1=tempSAVintA_
+#SAVATU2=tempSAVintB_
+#SAVATU3=tempSAVtel_ 
