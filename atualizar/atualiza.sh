@@ -102,14 +102,20 @@ xml=""
 olds=""
 progs=""
 backup=""
+logs=""
 sistema=""
-
+VERCLASS=""
+sistema=""
+SAVATU1=""
+SAVATU2=""
+SAVATU3=""
+SAVATU4=""
 
 #### configurar as variaveis em ambiente no arquivo abaixo:    ####
 source ./atualizac
 
 #-----------------------------------------------------------------#
-
+## Comandos 
 cmd_unzip=""
 cmd_unzip="unzip"
 
@@ -120,7 +126,7 @@ cmd_scp=""
 cmd_scp="scp"
 
 
-# Lista de mensagens #
+### Lista de mensagens ###
 
 ### Mensagens em YELLOW
 
