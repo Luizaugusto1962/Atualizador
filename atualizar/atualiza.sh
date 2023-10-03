@@ -5,7 +5,7 @@
 ##  Rotina para atualizar programas e bibliotecas da SAV                                                          #
 ##  Feito por Luiz Augusto   email luizaugusto@sav.com.br                                                         #
 ##  Versao do atualiza.sh                                                                                         #
-## UPDATE 29/09/2023                                                                                              #  
+## UPDATE 03/10/2023                                                                                              #  
 #                                                                                                                 #
 # INCLUIR PROCEDIMENTO PARA ATUALIZA PROGRAMA CLASS9 , VARIAVEL 9DIG  											  #
 # incluir PACOTE de programas                                                                                     #
@@ -1100,7 +1100,8 @@ _principal
 ##############################################################
 _iscobol () {
     if [ "$sistema" = "iscobol" ]; then
-     _linha
+    clear    
+	_linha
           /u/sav/savisc/iscobol/bin/iscclient -v
      _linha
 
