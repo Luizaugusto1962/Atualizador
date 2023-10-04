@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# set -xv
+#set -xv
 #set -e
 #-----------------------------------------------------------------------------------------------------------------#
 ##  Rotina para atualizar programas e bibliotecas da SAV                                                          #
