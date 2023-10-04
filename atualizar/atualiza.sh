@@ -454,25 +454,23 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
 # Verificando nome do arquivo com a extens o .class ou .int
 
      if [ "$sistema" = "iscobol" ]; then 
-        local seq
-              seq=$(ls -- *.class)
-             for pprog in $seq
-             do
-             zip "$prog"-$ANTERIOR "$exec"/"$pprog" 
-             done
-    else 
-        local seq
-        seq=$(ls -- *.int)
-        for pprog in $seq
+        for pprog in *.class
+        do
+        zip "$prog"-$ANTERIOR "$exec"/"$pprog"         
+        done
+     else 
+        for pprog in *.int
         do
           zip "$prog"-$ANTERIOR "$exec"/"$pprog"
         done
-        fi
-        local seq1
-        seq1=$(ls -- *.TEL)
-        for pprog in $seq1
+        sleep 2
+          mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
+     fi
+        for pprog in *.TEL
         do
           zip -r "$prog"-$ANTERIOR "$telas"/"$pprog"
+         sleep 2 
+          mv -f -- "$pprog" "$telas" >> "$LOG_ATU"
         done
 #               ..   BACKUP do programa efetuado   ..
     _linha
@@ -484,20 +482,8 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M26}+COLUMNS)/2)) "$M26" ;printf "%*s""${NORM}"
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M07}+COLUMNS)/2)) "$M07" ;printf "%*s""${NORM}"
     _linha
-#              ---- Agora ATUALIZANDO ... ----Programa a ser atualizado - PROG
-    for pprog in $seq
-    do
-       mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
-    done
-
-    for pprog in $seq1
-    do
-        if [ -f "$pprog" ]; then
-         mv -f -- "$pprog" "$telas" >> "$LOG_ATU"
-        fi 
-    done
-
-#             ALTERANDO A EXTENSAO DA ATUALIZACAO...  De *.zip para *.bkp
+ 
+# ALTERANDO A EXTENSAO DA ATUALIZACAO...  De *.zip para *.bkp
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M20}+COLUMNS)/2)) "$M20" ;printf "%*s""${NORM}"
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M13}+COLUMNS)/2)) "$M13" ;printf "%*s""${NORM}"
@@ -854,7 +840,6 @@ _biblioteca () {
      _linha
 
     sleep 1
-    fi
     
     if test ! -r "$tools"/"$INI-$VERSAO"*.zip ; then
 #               Backup nao encontrado no diretorio
@@ -1154,9 +1139,9 @@ _rebuild1() {
          \033c\033[10;10H${RED}Voce nao informou o arquivo a ser recuperado:${NORM}%s\n"
  local jut="$destino""$JUTIL"
     cd "$dir"/ || exit
-    local seq3
-    seq3=$(ls -- *.ARQ.dat *.DAT.dat *.LOG.dat *.PAN.dat)
-        for i in $seq3
+ #   local seq3
+ #   seq3=$(ls -- *.ARQ.dat *.DAT.dat *.LOG.dat *.PAN.dat)
+        for i in $dir/{*.ARQ.dat,*.DAT.dat,*.LOG.dat,*.PAN.dat}
         do
 ## grava tamanho do arquivo em variavel
     TAMANHO=$(du "$i" | awk '{print $1}')
@@ -1197,9 +1182,9 @@ else
          \033c\033[10;10H${RED}Recuperacao Isam :${NORM}%s\n"
     cd "$dir"/ || exit
 
-local seq4	
-seq4=$(ls -- *.ARQ *.DAT *.LOG *.PAN)	
-for i in $seq4
+#local seq4	
+#seq4=$(ls -- *.ARQ *.DAT *.LOG *.PAN)	
+for i in $dir/{*.ARQ,*.DAT,*.LOG,*.PAN}
 do
 # grava tamanho do arquivo em variavel
     TAMANHO=$(du "$i" | awk '{print $1}')
@@ -1629,9 +1614,10 @@ _expurgador () {
     clear
 ### apagar Biblioteca### 
         local DIR1="$tools""$backup"/
-        local seq1
-        seq1=$(ls -- *.bkp *.zip *.tgz )
-        for pprog in $seq1
+#        local seq1
+#        seq1=$(ls -- *.bkp *.zip *.tgz )
+#        for pprog in $seq1
+        for seq1 in {*.bkp,*.zip,*.tgz}
         do
 		"$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
         done
