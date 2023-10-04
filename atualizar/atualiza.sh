@@ -694,11 +694,9 @@ _volta_progz () {
 _press
 ### limpando diretorio 
         local DIR1="$tools""$olds"/
-        local seq1
-        seq1=$(ls -- *.class *.TEL *.xml *.int *.png *.jpg)
-        for pprog in $seq1
+        for pprog in {*.class,*.TEL,*.xml,*.int,*.png,*.jpg}
         do
-		"$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; 
+		"$cmd_find" "$DIR1" -name "$pprog" -ctime +30 -exec rm -r {} \; 
         done
 
 _desatualizado
