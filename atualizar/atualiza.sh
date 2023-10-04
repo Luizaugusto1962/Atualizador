@@ -693,11 +693,11 @@ _volta_progz () {
 _press
 ### limpando diretorio 
         local DIR1="$tools""$olds"/
-        local seq1
-        seq1=$(ls -- *.class *.TEL *.xml *.int *.png *.jpg)
-        for pprog in $seq1
+#        local seq1
+#        seq1=$(ls -- *.class *.TEL *.xml *.int *.png *.jpg)
+        for pprog in $DIR1{*.class,*.TEL,*.xml,*.int,*.png,*.jpg}
         do
-		"$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; 
+		"$cmd_find" "$DIR1" -name "$pprog" -ctime +30 -exec rm -r {} \; 
         done
 
 _desatualizado
@@ -1785,11 +1785,11 @@ _expurgador () {
     clear
 ### apagar Biblioteca### 
         local DIR1="$tools""$backup"/
-        local seq1
-        seq1=$(ls -- *.bkp *.zip *.tgz )
-        for pprog in $seq1
+ #       local seq1
+ #       seq1=$(ls -- *.bkp *.zip *.tgz )
+        for pprog in $DIR1{*.bkp,*.zip,*.tgz}
         do
-		"$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
+		"$cmd_find" "$DIR1" -name "$pprog" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
         done
 #### apagar olds###
      local DIR2="$tools""$olds"/
