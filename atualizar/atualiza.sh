@@ -451,30 +451,27 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
     sleep 1
     clear
 
-# Verificando nome do arquivo com a extens o .class ou .int
+# Verificando nome do arquivo com a extensao .class ou .int
 
      if [ "$sistema" = "iscobol" ]; then 
-        local seq
-              seq=$(ls -- *.class)
-             for pprog in $seq
-             do
-             zip "$prog"-$ANTERIOR "$exec"/"$pprog" 
-             done
-    else 
-        local seq
-        seq=$(ls -- *.int)
-        for pprog in $seq
+        for pprog in $tools/{*.class}
         do
-          zip "$prog"-$ANTERIOR "$exec"/"$pprog"
+            zip "$prog"-$ANTERIOR "$exec"/"$pprog" 
+            mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
         done
-        fi
-        local seq1
-        seq1=$(ls -- *.TEL)
-        for pprog in $seq1
+     else 
+        for pprog in $tools/{*.int}
+        do
+            zip "$prog"-$ANTERIOR "$exec"/"$pprog"
+            mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
+        done
+     fi
+        for pprog in $tools/{*.TEL}
         do
           zip -r "$prog"-$ANTERIOR "$telas"/"$pprog"
+          mv -f -- "$pprog" "$telas" >> "$LOG_ATU"
         done
-#               ..   BACKUP do programa efetuado   ..
+# BACKUP do programa efetuado.
     _linha
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M24}+COLUMNS)/2)) "$M24" ;printf "%*s""${NORM}"
     _linha
@@ -484,18 +481,6 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M26}+COLUMNS)/2)) "$M26" ;printf "%*s""${NORM}"
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M07}+COLUMNS)/2)) "$M07" ;printf "%*s""${NORM}"
     _linha
-#              ---- Agora ATUALIZANDO ... ----Programa a ser atualizado - PROG
-    for pprog in $seq
-    do
-       mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
-    done
-
-    for pprog in $seq1
-    do
-        if [ -f "$pprog" ]; then
-         mv -f -- "$pprog" "$telas" >> "$LOG_ATU"
-        fi 
-    done
 
 #             ALTERANDO A EXTENSAO DA ATUALIZACAO...  De *.zip para *.bkp
      _linha
@@ -1370,10 +1355,8 @@ else
          \033c\033[10;10H${RED}Recuperacao Isam :${NORM}%s\n"
     cd "$dir"/ || exit
 
-local seq4	
-seq4=$(ls -- *.ARQ *.DAT *.LOG *.PAN)	
-for i in $seq4
-do
+    for i in $dir/{*.ARQ,*.DAT,*.LOG,*.PAN}
+    do
 # grava tamanho do arquivo em variavel
     TAMANHO=$(du "$i" | awk '{print $1}')
 # executa rebuild se tamanho for maior que zero
@@ -1382,7 +1365,7 @@ do
     else
     rebuild -d -e "$i"
     fi
-done
+    done
 fi
 _press
 _rebuild 
