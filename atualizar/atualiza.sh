@@ -1327,9 +1327,9 @@ _rebuild1() {
          \033c\033[10;10H${RED}Voce nao informou o arquivo a ser recuperado:${NORM}%s\n"
  local jut="$destino""$JUTIL"
     cd "$dir"/ || exit
-    local seq3
-    seq3=$(ls -- *.ARQ.dat *.DAT.dat *.LOG.dat *.PAN.dat)
-        for i in $seq3
+#    local seq3
+#    seq3=$(ls -- *.ARQ.dat *.DAT.dat *.LOG.dat *.PAN.dat)
+        for i in $dir/{*.ARQ.dat,*.DAT.dat,*.LOG.dat,*.PAN.dat}
         do
 ## grava tamanho do arquivo em variavel
     TAMANHO=$(du "$i" | awk '{print $1}')
@@ -1345,9 +1345,9 @@ _rebuild1() {
      printf "
      \033c\033[10;10H${RED}Voce nao informou o nome do arquivo em minusculo ${NORM}%s\n" 
     cd "$tools"/ || exit
+    done
 _press
 _ferramentas
-    done
 
         cd "$dir" || exit 
     local ARQUIVO="$PEDARQ.???.dat"
