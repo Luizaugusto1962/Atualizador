@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -xv
+# set -xv
 #set -e
 #-----------------------------------------------------------------------------------------------------------------#
 ##  Rotina para atualizar programas e bibliotecas da SAV                                                          #
@@ -451,27 +451,30 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
     sleep 1
     clear
 
-# Verificando nome do arquivo com a extensao .class ou .int
+# Verificando nome do arquivo com a extens o .class ou .int
 
      if [ "$sistema" = "iscobol" ]; then 
-        for pprog in $tools/{*.class}
+        local seq
+              seq=$(ls -- *.class)
+             for pprog in $seq
+             do
+             zip "$prog"-$ANTERIOR "$exec"/"$pprog" 
+             done
+    else 
+        local seq
+        seq=$(ls -- *.int)
+        for pprog in $seq
         do
-            zip "$prog"-$ANTERIOR "$exec"/"$pprog" 
-            mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
+          zip "$prog"-$ANTERIOR "$exec"/"$pprog"
         done
-     else 
-        for pprog in $tools/{*.int}
-        do
-            zip "$prog"-$ANTERIOR "$exec"/"$pprog"
-            mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
-        done
-     fi
-        for pprog in $tools/{*.TEL}
+        fi
+        local seq1
+        seq1=$(ls -- *.TEL)
+        for pprog in $seq1
         do
           zip -r "$prog"-$ANTERIOR "$telas"/"$pprog"
-          mv -f -- "$pprog" "$telas" >> "$LOG_ATU"
         done
-# BACKUP do programa efetuado.
+#               ..   BACKUP do programa efetuado   ..
     _linha
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M24}+COLUMNS)/2)) "$M24" ;printf "%*s""${NORM}"
     _linha
@@ -481,6 +484,18 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M26}+COLUMNS)/2)) "$M26" ;printf "%*s""${NORM}"
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M07}+COLUMNS)/2)) "$M07" ;printf "%*s""${NORM}"
     _linha
+#              ---- Agora ATUALIZANDO ... ----Programa a ser atualizado - PROG
+    for pprog in $seq
+    do
+       mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
+    done
+
+    for pprog in $seq1
+    do
+        if [ -f "$pprog" ]; then
+         mv -f -- "$pprog" "$telas" >> "$LOG_ATU"
+        fi 
+    done
 
 #             ALTERANDO A EXTENSAO DA ATUALIZACAO...  De *.zip para *.bkp
      _linha
@@ -693,11 +708,11 @@ _volta_progz () {
 _press
 ### limpando diretorio 
         local DIR1="$tools""$olds"/
-#        local seq1
-#        seq1=$(ls -- *.class *.TEL *.xml *.int *.png *.jpg)
-        for pprog in $DIR1{*.class,*.TEL,*.xml,*.int,*.png,*.jpg}
+        local seq1
+        seq1=$(ls -- *.class *.TEL *.xml *.int *.png *.jpg)
+        for pprog in $seq1
         do
-		"$cmd_find" "$DIR1" -name "$pprog" -ctime +30 -exec rm -r {} \; 
+		"$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; 
         done
 
 _desatualizado
@@ -828,180 +843,7 @@ _principal
 ########################################
 _biblioteca () {
     clear
-     printf "
-      \033c\033[10;10H${RED}Informe versao a ser atualizar: ${NORM}
-%s\n"
-     _linha 
-	  read -rp "         Informe somente o numeral da versao : " VERSAO
- 
-      if [ -z "$VERSAO" ]; then
-     printf "
-     \033c\033[10;10H${RED}Voce nao informou o a versao a ser atualizado :${NORM}
-%s\n"
-    _linha
-	sleep 2
-    _principal
-    fi
-    clear
-    printf "${GREEN}     +--------------------------------------------+${NORM}%s\n"
-    printf "${GREEN}     |${NORM}      ${RED}          Menu Biblioteca             ${GREEN}|${NORM}%s\n"
-    printf "${GREEN}     +--------------------------------------------+${NORM}%s\n"
-    printf "\n"
-    printf "\n"
-    printf "    ${PURPLE}Escolha o local da Biblioteca: ${NORM}%s\n"
-    printf "\n"
-    printf "    ${GREEN}1${NORM} - ${WHITE}Atualizacao do Transpc ${NORM}%s\n"
-    printf "\n"
-    printf "    ${GREEN}2${NORM} - ${WHITE}Atualizacao do Savatu ${NORM}%s\n"
-    printf "\n"
-    printf "    ${GREEN}3${NORM} - ${WHITE}Atualizacao OFF-Line${NORM}%s\n"
-    printf "\n"
-    printf "    ${GREEN}9${NORM} - ${RED}Menu Anterior${NORM}%s\n"
-    printf "\n" 
-    printf "    ${YELLOW}Digite o numero da OPCAO desejada -> ${NORM}%s"
-    read -r OPCAO1
-    printf "\n"
-    printf "\n"
-    case $OPCAO1 in
-        1) _transpc ;;
-        2) _savatu ;;
-        3) _salva ;;
-        9) clear ; _principal ;;
-        *) Opcao Invalida ; printf ; _biblioteca ;;
-    esac
-}
-
-### Processo do scp ###
-_run_scp2 () {
-     scp -r -P "$PORTA" "$USUARIO"@"$IPSERVER":"$DESTINO2""$atu""$VERSAO".zip . # programas da biblioteca
-}
-
-
-#### Processo de recepcao de biblioteca ##
-_scp_biblioteca () {
-	if [ "$sistema" = "iscobol" ]; then
-    for atu in $SAVATU1 $SAVATU2 $SAVATU3 $SAVATU4 ;do
-    _run_scp2
-	done
-_salva
-	else
-     for atu in $SAVATU1 $SAVATU2 $SAVATU3 ;do	
-	 _run_scp2
-	done 
-	fi
-_salva
-}
-
-##############################################################
-#       Atualizacao da pasta transpc                         # 
-##############################################################
-_transpc () {
-
-###
-#   Informe a senha do usuario do scp
-     _linha
-     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M29}+COLUMNS)/2)) "$M29" ;printf "%*s""${NORM}"
-     _linha
-     DESTINO2="$DESTINO2TRANSPC"
-     _scp_biblioteca
-
-}
-
-##############################################################
-#       Atualizacao da pasta do savatu                       # 
-##############################################################
-
-_savatu () {
-#  Informe a senha do usuario do scp 
-     _linha
-     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M29}+COLUMNS)/2)) "$M29" ;printf "%*s""${NORM}"
-     _linha
-	if [ "$sistema" = "iscobol" ]; then 
- 	DESTINO2="$DESTINO2SAVATUISC"
-    _scp_biblioteca
-	else 
-	DESTINO2="$DESTINO2SAVATUMF"
-	_scp_biblioteca
-	fi
-	
-}
-
-##############################################################
-#   Atualizacao offline a biblioteca deve esta no diretorio  # 
-##############################################################
-_salva () {
-
-M21="A atualizacao tem que esta no diretorio ""$tools"
-     _linha
-     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M21}+COLUMNS)/2)) "$M21" ;printf "%*s""${NORM}"
-     _linha
-     if [ "$sistema" = "iscobol" ]; then
-     for atu in $SAVATU1 $SAVATU2 $SAVATU3 $SAVATU4 ;do
-        if  test ! -r "$atu""$VERSAO"".zip" ; then
-            clear
-#          Atualizacao nao encontrado no diretorio
-    _linha
-    printf "%*s""${RED}" ;printf "%*s\n" $(((${#M48}+COLUMNS)/2)) "$M48" ;printf "%*s""${NORM}"
-    _linha
-	_press
-	clear
-    _principal
-        fi
-     done 
-_processo
-#          Atualizacao nao encontrado no diretorio
-    _linha
-    printf "%*s""${RED}" ;printf "%*s\n" $(((${#M48}+COLUMNS)/2)) "$M48" ;printf "%*s""${NORM}"
-    _linha
-_press
-_principal
-    else
-     for atu in $SAVATU1 $SAVATU2 $SAVATU3 ;do
-           if  test ! -r "$atu""$VERSAO"".zip" ; then
-            clear 
-#          Atualizacao nao encontrado no diretorio
-    _linha
-    printf "%*s""${RED}" ;printf "%*s\n" $(((${#M48}+COLUMNS)/2)) "$M48" ;printf "%*s""${NORM}"
-    _linha
-_press
-_principal
-           fi
-	done
-	fi
-_processo
-}
- 
-##############################################################
-#  procedimento salvar os programas antes de atualizar    # 
-##############################################################
-
-_processo () {
-
-#          ZIPANDO OS ARQUIVOS ANTERIORES...
-     _linha
-     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M01}+COLUMNS)/2)) "$M01" ;printf "%*s""${NORM}"
-     _linha
-     
-    sleep 1
-	if [ "$sistema" = "iscobol" ]; then
-    cd "$exec"/ || exit
-	"$cmd_find" "$exec"/ -type f \( -iname "*.class" -o -iname "*.jpg" -o -iname "*.png" -o -iname "*.brw" -o -iname "*." -o -iname "*.dll" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
-#    zip -r "$tools"/"$INI"-"$VERSAO" -i "*.class" "*.jpg" "*.png" "*.brw" "*." "*.dll"
-    cd "$telas"/ || exit
-	"$cmd_find" "$telas"/ -type f \( -iname "*.TEL" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
-#    zip -r "$tools"/"$INI"-"$VERSAO" -i "*.TEL"
-    cd "$xml"/ || exit
-	"$cmd_find" "$xml"/ -type f \( -iname "*.xml" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
-#    zip -r "$tools"/"$INI"-"$VERSAO" -i "*.xml"
-    cd "$tools"/ || exit
-    clear
-    
-    else
-    cd "$exec"/ || exit
-	"$cmd_find" "$exec"/ -type f \( -iname "*.int" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
-
-    cd "$telas"/ || exit
-	"$cmd_find" "$telas"/ -type f \( -iname "*.TEL" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
+  echo "" zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
 
     cd "$tools"/ || exit     
     clear
@@ -1312,9 +1154,9 @@ _rebuild1() {
          \033c\033[10;10H${RED}Voce nao informou o arquivo a ser recuperado:${NORM}%s\n"
  local jut="$destino""$JUTIL"
     cd "$dir"/ || exit
-#    local seq3
-#    seq3=$(ls -- *.ARQ.dat *.DAT.dat *.LOG.dat *.PAN.dat)
-        for i in $dir/{*.ARQ.dat,*.DAT.dat,*.LOG.dat,*.PAN.dat}
+    local seq3
+    seq3=$(ls -- *.ARQ.dat *.DAT.dat *.LOG.dat *.PAN.dat)
+        for i in $seq3
         do
 ## grava tamanho do arquivo em variavel
     TAMANHO=$(du "$i" | awk '{print $1}')
@@ -1330,9 +1172,9 @@ _rebuild1() {
      printf "
      \033c\033[10;10H${RED}Voce nao informou o nome do arquivo em minusculo ${NORM}%s\n" 
     cd "$tools"/ || exit
-    done
 _press
 _ferramentas
+    done
 
         cd "$dir" || exit 
     local ARQUIVO="$PEDARQ.???.dat"
@@ -1355,8 +1197,10 @@ else
          \033c\033[10;10H${RED}Recuperacao Isam :${NORM}%s\n"
     cd "$dir"/ || exit
 
-    for i in $dir/{*.ARQ,*.DAT,*.LOG,*.PAN}
-    do
+local seq4	
+seq4=$(ls -- *.ARQ *.DAT *.LOG *.PAN)	
+for i in $seq4
+do
 # grava tamanho do arquivo em variavel
     TAMANHO=$(du "$i" | awk '{print $1}')
 # executa rebuild se tamanho for maior que zero
@@ -1365,7 +1209,7 @@ else
     else
     rebuild -d -e "$i"
     fi
-    done
+done
 fi
 _press
 _rebuild 
@@ -1785,11 +1629,11 @@ _expurgador () {
     clear
 ### apagar Biblioteca### 
         local DIR1="$tools""$backup"/
- #       local seq1
- #       seq1=$(ls -- *.bkp *.zip *.tgz )
-        for pprog in $DIR1{*.bkp,*.zip,*.tgz}
+        local seq1
+        seq1=$(ls -- *.bkp *.zip *.tgz )
+        for pprog in $seq1
         do
-		"$cmd_find" "$DIR1" -name "$pprog" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
+		"$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
         done
 #### apagar olds###
      local DIR2="$tools""$olds"/
