@@ -102,9 +102,6 @@ xml=""
 olds=""
 progs=""
 backup=""
-logs=""
-sistema=""
-VERCLASS=""
 sistema=""
 SAVATU1=""
 SAVATU2=""
@@ -118,13 +115,13 @@ source ./atualizac
 ## Comandos 
 cmd_unzip=""
 cmd_unzip="unzip"
-
+##
 cmd_find=""
 cmd_find="find"
-
+##
 cmd_scp=""
 cmd_scp="scp"
-
+##
 
 ### Lista de mensagens ###
 
@@ -1137,8 +1134,7 @@ _rebuild1() {
          \033c\033[10;10H${RED}Voce nao informou o arquivo a ser recuperado:${NORM}%s\n"
  local jut="$destino""$JUTIL"
     cd "$dir"/ || exit
- #   local seq3
- #   seq3=$(ls -- *.ARQ.dat *.DAT.dat *.LOG.dat *.PAN.dat)
+
         for i in $dir/{*.ARQ.dat,*.DAT.dat,*.LOG.dat,*.PAN.dat}
         do
 ## grava tamanho do arquivo em variavel
@@ -1180,8 +1176,6 @@ else
          \033c\033[10;10H${RED}Recuperacao Isam :${NORM}%s\n"
     cd "$dir"/ || exit
 
-#local seq4	
-#seq4=$(ls -- *.ARQ *.DAT *.LOG *.PAN)	
 for i in $dir/{*.ARQ,*.DAT,*.LOG,*.PAN}
 do
 # grava tamanho do arquivo em variavel
@@ -1611,14 +1605,11 @@ _ferramentas
 _expurgador () {
     clear
 ### apagar Biblioteca### 
-        local DIR1="$tools""$backup"/
-#        local seq1
-#        seq1=$(ls -- *.bkp *.zip *.tgz )
-#        for pprog in $seq1
-        for seq1 in {*.bkp,*.zip,*.tgz}
-        do
-		"$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
-        done
+     local DIR1="$tools""$backup"/
+     for seq1 in {*.bkp,*.zip,*.tgz}
+     do
+     "$cmd_find" "$DIR1" -name "$seq1" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
+     done
 #### apagar olds###
      local DIR2="$tools""$olds"/
      "$cmd_find" "$DIR2" -name "*.zip" -ctime +30 -exec rm -r {} \; >> "$LOG_LIMPA"
