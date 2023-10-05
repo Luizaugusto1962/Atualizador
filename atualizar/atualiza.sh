@@ -453,16 +453,18 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
      if [ "$sistema" = "iscobol" ]; then 
         for pprog in *.class
         do
-        zip "$prog"-$ANTERIOR "$exec"/"$pprog"         
-        done
+        zip "$prog"-$ANTERIOR "$exec"/"$pprog"   
+        sleep 2		
+        mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
+		done
      else 
         for pprog in *.int
         do
           zip "$prog"-$ANTERIOR "$exec"/"$pprog"
         done
         sleep 2
-          mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
-     fi
+	 fi	
+             
         for pprog in *.TEL
         do
           zip -r "$prog"-$ANTERIOR "$telas"/"$pprog"
@@ -898,7 +900,7 @@ _transpc () {
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M29}+COLUMNS)/2)) "$M29" ;printf "%*s""${NORM}"
      _linha
-     DESTINO="$DESTINO2TRANSPC"
+     DESTINO2="$DESTINO2TRANSPC"
      _scp_biblioteca
 
 }
