@@ -173,7 +173,7 @@ M43="Programa ""$prog""-anterior.zip nao encontrado no diretorio."
 M45="Backup nao encontrado no diretorio" 
 M46="Backup da Biblioteca nao encontrado no diretorio"
 M47="Backup Abortado!"
-M48="Atualizacao nao encontrado ou imcompleta."
+M48="Atualizacao nao encontrado ou incompleta."
 M49="Arquivo nao encontrado no diretorio"
 #M50="Informe o nome do programa a ser atualizado:"
 M51="Verificando e/ou excluido arquivos com mais de 30 dias criado."
@@ -824,10 +824,180 @@ _principal
 ########################################
 _biblioteca () {
     clear
-  echo "" zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
-
-    cd "$tools"/ || exit     
+     printf "
+      \033c\033[10;10H${RED}Informe versao a ser atualizar: ${NORM}
+%s\n"
+     _linha 
+	  read -rp "         Informe somente o numeral da versao : " VERSAO
+ 
+      if [ -z "$VERSAO" ]; then
+     printf "
+     \033c\033[10;10H${RED}Voce nao informou o a versao a ser atualizado :${NORM}
+%s\n"
+    _linha
+	sleep 2
+    _principal
+    fi
     clear
+    printf "${GREEN}     +--------------------------------------------+${NORM}%s\n"
+    printf "${GREEN}     |${NORM}      ${RED}          Menu Biblioteca             ${GREEN}|${NORM}%s\n"
+    printf "${GREEN}     +--------------------------------------------+${NORM}%s\n"
+    printf "\n"
+    printf "\n"
+    printf "    ${PURPLE}Escolha o local da Biblioteca: ${NORM}%s\n"
+    printf "\n"
+    printf "    ${GREEN}1${NORM} - ${WHITE}Atualizacao do Transpc ${NORM}%s\n"
+    printf "\n"
+    printf "    ${GREEN}2${NORM} - ${WHITE}Atualizacao do Savatu ${NORM}%s\n"
+    printf "\n"
+    printf "    ${GREEN}3${NORM} - ${WHITE}Atualizacao OFF-Line${NORM}%s\n"
+    printf "\n"
+    printf "    ${GREEN}9${NORM} - ${RED}Menu Anterior${NORM}%s\n"
+    printf "\n" 
+    printf "    ${YELLOW}Digite o numero da OPCAO desejada -> ${NORM}%s"
+    read -r OPCAO1
+    printf "\n"
+    printf "\n"
+    case $OPCAO1 in
+        1) _transpc ;;
+        2) _savatu ;;
+        3) _salva ;;
+        9) clear ; _principal ;;
+        *) Opcao Invalida ; printf ; _biblioteca ;;
+    esac
+}
+
+### Processo do scp ###
+_run_scp2 () {
+     scp -r -P "$PORTA" "$USUARIO"@"$IPSERVER":"$DESTINO2""$atu""$VERSAO".zip . # programas da biblioteca
+}
+
+
+#### Processo de recepcao de biblioteca ##
+_scp_biblioteca () {
+	if [ "$sistema" = "iscobol" ]; then
+    for atu in $SAVATU1 $SAVATU2 $SAVATU3 $SAVATU4 ;do
+    _run_scp2
+	done
+_salva
+	else
+     for atu in $SAVATU1 $SAVATU2 $SAVATU3 ;do	
+	 _run_scp2
+	done 
+	fi
+_salva
+}
+
+##############################################################
+#       Atualizacao da pasta transpc                         # 
+##############################################################
+_transpc () {
+
+###
+#   Informe a senha do usuario do scp
+     _linha
+     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M29}+COLUMNS)/2)) "$M29" ;printf "%*s""${NORM}"
+     _linha
+     DESTINO="$DESTINO2TRANSPC"
+     _scp_biblioteca
+
+}
+
+##############################################################
+#       Atualizacao da pasta do savatu                       # 
+##############################################################
+
+_savatu () {
+#  Informe a senha do usuario do scp 
+     _linha
+     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M29}+COLUMNS)/2)) "$M29" ;printf "%*s""${NORM}"
+     _linha
+	if [ "$sistema" = "iscobol" ]; then 
+ 	DESTINO2="$DESTINO2SAVATUISC"
+    _scp_biblioteca
+	else 
+	DESTINO2="$DESTINO2SAVATUMF"
+	_scp_biblioteca
+	fi
+}
+
+##############################################################
+#   Atualizacao offline a biblioteca deve esta no diretorio  # 
+##############################################################
+_salva () {
+
+M21="A atualizacao tem que esta no diretorio ""$tools"
+     _linha
+     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M21}+COLUMNS)/2)) "$M21" ;printf "%*s""${NORM}"
+     _linha
+     if [ "$sistema" = "iscobol" ]; then
+     for atu in $SAVATU1 $SAVATU2 $SAVATU3 $SAVATU4 ;do
+        if  test ! -r "$atu""$VERSAO"".zip" ; then
+            clear
+#          Atualizacao nao encontrado no diretorio
+    _linha
+    printf "%*s""${RED}" ;printf "%*s\n" $(((${#M48}+COLUMNS)/2)) "$M48" ;printf "%*s""${NORM}"
+    _linha
+	_press
+	clear
+    _principal
+        fi
+     done 
+_processo
+#          Atualizacao nao encontrado no diretorio
+    _linha
+    printf "%*s""${RED}" ;printf "%*s\n" $(((${#M48}+COLUMNS)/2)) "$M48" ;printf "%*s""${NORM}"
+    _linha
+_press
+_principal
+    else
+     for atu in $SAVATU1 $SAVATU2 $SAVATU3 ;do
+           if  test ! -r "$atu""$VERSAO"".zip" ; then
+            clear 
+#          Atualizacao nao encontrado no diretorio
+    _linha
+    printf "%*s""${RED}" ;printf "%*s\n" $(((${#M48}+COLUMNS)/2)) "$M48" ;printf "%*s""${NORM}"
+    _linha
+_press
+_principal
+           fi
+	done
+	fi
+_processo
+}
+ 
+##############################################################
+#  procedimento salvar os programas antes de atualizar    # 
+##############################################################
+
+_processo () {
+
+#          ZIPANDO OS ARQUIVOS ANTERIORES...
+     _linha
+     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M01}+COLUMNS)/2)) "$M01" ;printf "%*s""${NORM}"
+     _linha
+     
+    sleep 1
+	if [ "$sistema" = "iscobol" ]; then
+    cd "$exec"/ || exit
+	find "$exec"/ -type f \( -iname "*.class" -o -iname "*.jpg" -o -iname "*.png" -o -iname "*.brw" -o -iname "*." -o -iname "*.dll" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
+#    zip -r "$tools"/"$INI"-"$VERSAO" -i "*.class" "*.jpg" "*.png" "*.brw" "*." "*.dll"
+    cd "$telas"/ || exit
+	find "$telas"/ -type f \( -iname "*.TEL" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
+#    zip -r "$tools"/"$INI"-"$VERSAO" -i "*.TEL"
+    cd "$xml"/ || exit
+	find "$xml"/ -type f \( -iname "*.xml" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
+#    zip -r "$tools"/"$INI"-"$VERSAO" -i "*.xml"
+    cd "$tools"/ || exit
+    clear
+    
+    else
+    cd "$exec"/ || exit
+	find "$exec"/ -type f \( -iname "*.int" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
+
+    cd "$telas"/ || exit
+	find "$telas"/ -type f \( -iname "*.TEL" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
+    fi 
 
 #               ..   BACKUP COMPLETO   ..
      _linha
@@ -875,7 +1045,7 @@ _principal
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M19}+COLUMNS)/2)) "$M19" ;printf "%*s""${NORM}"
     _linha
     for atu in $SAVATU1 $SAVATU2 $SAVATU3 $SAVATU4 ;do
-	    printf "${GREEN}"" Atualizado ""$atu""$VERSAO"".zip""${NORM}%s\n" || printf "  Ouve erro... "
+	    printf "${GREEN}"" Atualizado ""$atu""$VERSAO"".zip""${NORM}%s\n" || printf "$M48"
         unzip -o "$atu""$VERSAO".zip -d "$destino" >> "$LOG_ATU"
       sleep 2
       clear
@@ -1378,7 +1548,7 @@ _press
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M29}+COLUMNS)/2)) "$M29" ;printf "%*s""${NORM}"
      _linha
 
-     scp -P 41122 "$DIRDEST/$ARQ" atualiza@177.102.143.23:/"$ENVBASE" 
+     "$cmd_scp" -P "$PORTA" "$DIRDEST/$ARQ" "$USUARIO"@"$IPSERVER":/"$ENVBASE" 
 M15="Backup enviado para a pasta, \"""$ENVBASE""\"."
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M15}+COLUMNS)/2)) "$M15" ;printf "%*s""${NORM}"
@@ -1454,7 +1624,7 @@ _press
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M29}+COLUMNS)/2)) "$M29" ;printf "%*s""${NORM}"
      _linha
-     scp -P 41122 "$DIRDEST/$VBACKUP".zip atualiza@177.102.143.23:/"$ENVBASE" 
+     "$cmd_scp" -P "$PORTA" "$DIRDEST/$VBACKUP".zip "$USUARIO"@"$IPSERVER":/"$ENVBASE" 
 M15="Backup enviado para a pasta, \"""$ENVBASE""\"."
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M15}+COLUMNS)/2)) "$M15" ;printf "%*s""${NORM}"
