@@ -184,7 +184,7 @@ M53="Informe de qual o Backup que deseja voltara o(s) arquivo(s)."
 ## Mensagens em cyan
 M60="..Checando estrutura dos diretorios do atualiza.sh.." 
 M61="..Encontrado o diretorio do sistema .." 
-#M62="Ja existe um backup em ""$DIRDEST"" nos ultimos dias."
+#M62="<<   Pressione qualquer tecla para continuar... >>"
 
 ### Variavel para identificar o programa ou versao a atualizada ###
 #-----------------------------------------------------------------#
@@ -231,6 +231,14 @@ DESTINO2TRANSPC="/u/varejo/trans_pc/"
 DESTINO2=""
 
 ##########################################################################
+###################################################
+# Funcao de sleep                                 #
+###################################################
+read_sleep() {
+    # Usage: read_sleep 1
+    #        read_sleep 0.2
+    read -rt "$1" <> <(:) || :
+}
 
 ###################################################
 # Funcao de espera                                #
@@ -240,10 +248,10 @@ _press () {
     read -t 15 -n 1 -s -r -p  "${YELLOW}""          <<   Pressione qualquer tecla para continuar... >>""${NORM}"
     clear
 }
-
-###########################
-# Linha tracejada         #
-###########################
+#printf "%*s"read -t 15 -n 1 -s -r -p"${YELLOW}" ;printf "%*s\n" $(((${#M62}+COLUMNS)/2)) "$M62" ;printf "%*s""${NORM}"
+###################################################
+# Linha tracejada                                 #
+###################################################
 
 _linha () {
     printf -v Espacos %60s # quantidade de tracos por linha
@@ -261,13 +269,13 @@ _linha () {
 _linha
 printf "%*s""${CYAN}" ;printf "%*s\n" $(((${#M61}+COLUMNS)/2)) "$M61" ;printf "%*s""${NORM}"
 _linha
-    sleep 1
+    read_sleep 1
     else
 M44="Nao foi encontrado o diretorio ""$exec"    
 _linha
 printf "%*s""${RED}" ;printf "%*s\n" $(((${#M44}+COLUMNS)/2)) "$M44" ;printf "%*s""${NORM}"
 _linha  
-    sleep 2
+    read_sleep 2
     exit
     fi
 
@@ -421,7 +429,7 @@ _pacoteoff () {
 #             O programa tem que estar no diretorio
 
 local NOMEPROG="$prog""$class".zip
-    sleep 1
+    read_sleep 1
 _atupacote
 _press 
 _principal
@@ -445,7 +453,7 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
 
 ## Descompactando o programa baixado
     unzip -o "$prog""$class".zip >> "$LOG_ATU"
-    sleep 1
+    read_sleep 1
     clear
 
 # Verificando nome do arquivo com a extens o .class ou .int
@@ -454,7 +462,7 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
         for pprog in *.class
         do
         zip "$prog"-$ANTERIOR "$exec"/"$pprog"   
-        sleep 2		
+        read_sleep 2		
         mv -f -- "$pprog" "$exec" >> "$LOG_ATU"
 		done
      else 
@@ -462,20 +470,20 @@ M42="Programa, ""$NOMEPROG"" nao encontrado no diretorio"
         do
           zip "$prog"-$ANTERIOR "$exec"/"$pprog"
         done
-        sleep 2
+        read_sleep 2
 	 fi	
              
         for pprog in *.TEL
         do
           zip -r "$prog"-$ANTERIOR "$telas"/"$pprog"
-         sleep 2 
+         read_sleep 2 
           mv -f -- "$pprog" "$telas" >> "$LOG_ATU"
         done
 #               ..   BACKUP do programa efetuado   ..
     _linha
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M24}+COLUMNS)/2)) "$M24" ;printf "%*s""${NORM}"
     _linha
-     sleep 1
+     read_sleep 1
  # Atualizando o novo programa.
     _linha
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M26}+COLUMNS)/2)) "$M26" ;printf "%*s""${NORM}"
@@ -593,7 +601,7 @@ M02="Voltando a versao anterior do programa ""$prog"
     _linha
     
     unzip -o "$tools$olds"/"$prog"-"$ANTERIOR".zip -d /  >> "$LOG_ATU"
-    sleep 2
+    read_sleep 2
         clear
 #                   VOLTA DE PROGRAMA CONCLUIDA
     _linha
@@ -756,7 +764,7 @@ _volta_bibli () {
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M03}+COLUMNS)/2)) "$M01" ;printf "%*s""${NORM}"
      _linha
      
-    sleep 1
+    read_sleep 1
 	if [ "$sistema" = "iscobol" ]; then
 
     cd "$tools""$olds" || exit
@@ -837,7 +845,7 @@ _biblioteca () {
      \033c\033[10;10H${RED}Voce nao informou o a versao a ser atualizado :${NORM}
 %s\n"
     _linha
-	sleep 2
+	read_sleep 2
     _principal
     fi
     clear
@@ -979,7 +987,7 @@ _processo () {
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M01}+COLUMNS)/2)) "$M01" ;printf "%*s""${NORM}"
      _linha
      
-    sleep 1
+    read_sleep 1
 	if [ "$sistema" = "iscobol" ]; then
     cd "$exec"/ || exit
 	find "$exec"/ -type f \( -iname "*.class" -o -iname "*.jpg" -o -iname "*.png" -o -iname "*.brw" -o -iname "*." -o -iname "*.dll" \) -exec zip -r "$tools"/"$INI"-"$VERSAO" "{}" +;
@@ -1006,7 +1014,7 @@ _processo () {
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M27}+COLUMNS)/2)) "$M27" ;printf "%*s""${NORM}"
      _linha
 
-    sleep 1
+    read_sleep 1
     
     if test ! -r "$tools"/"$INI-$VERSAO"*.zip ; then
 #               Backup nao encontrado no diretorio
@@ -1017,7 +1025,7 @@ _processo () {
 ##############################################################
 #  procedimento caso nao exista o diretorio a ser atualizado # 
 ##############################################################
-    sleep 2    
+    read_sleep 2    
      printf "
       \033c\033[10;10H${YELLOW}Deseja continuar a atualizacao? (n/S): ${NORM}
 %s\n"
@@ -1047,9 +1055,9 @@ _principal
     printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M19}+COLUMNS)/2)) "$M19" ;printf "%*s""${NORM}"
     _linha
     for atu in $SAVATU1 $SAVATU2 $SAVATU3 $SAVATU4 ;do
-	    printf "${GREEN}"" Atualizado ""$atu""$VERSAO"".zip""${NORM}%s\n" || printf "$M48"
+	    printf "${GREEN}"" Atualizado ""$atu""$VERSAO"".zip""${NORM}""%*s\n" || printf "%*s""$M48"
         unzip -o "$atu""$VERSAO".zip -d "$destino" >> "$LOG_ATU"
-      sleep 2
+      read_sleep 2
       clear
       done
 #                 Atualizacao COMPLETA
@@ -1238,7 +1246,7 @@ _temps() {
          fi 
          for line in $arqs
          do
-           zip -m "$DIRDEST"/"$TEMPORARIOS-$ETIQUETATEMPO" $DIR$line  >> "$LOG_LIMPA"
+           zip -m "$DIRDEST"/"$TEMPORARIOS-$ETIQUETATEMPO" $DIR"$line"  >> "$LOG_LIMPA"
          done
     
      #           Movendo arquivos Temporarios
@@ -1441,7 +1449,7 @@ M62="Ja existe um backup em ""$DIRDEST"" nos ultimos dias."
      _linha
      printf "%*s""${RED}" ;printf "%*s\n" $(((${#M47}+COLUMNS)/2)) "$M47" ;printf "%*s""${NORM}"
      _linha        
-    sleep 3s
+    read_sleep 3
     _ferramentas 
         elif [ "$CONT" = S ] || [ "$CONT" = s ] ; then
 
@@ -1473,7 +1481,7 @@ _progresso () {
   while true
   do
     echo -n "${YELLOW}""#""${NORM}"
-    sleep 5
+    read_sleep 5
   done
 }
 
@@ -1554,7 +1562,7 @@ M15="Backup enviado para a pasta, \"""$ENVBASE""\"."
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M15}+COLUMNS)/2)) "$M15" ;printf "%*s""${NORM}"
      _linha
-     sleep 3 
+     read_sleep 3 
      else
 #   Opcao Invalida
      _linha
@@ -1630,7 +1638,7 @@ M15="Backup enviado para a pasta, \"""$ENVBASE""\"."
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M15}+COLUMNS)/2)) "$M15" ;printf "%*s""${NORM}"
      _linha
-    sleep 3 
+    read_sleep 3 
     else
 #   Opcao Invalida
      _linha
@@ -1711,7 +1719,7 @@ M34="O arquivo ""$VARQUIVO"
 
     cd "$DIRBACK" || exit
     unzip -o "$DIRDEST""$VBACKUP".zip "$VARQUIVO*.*" >> "$LOG_ATU"
-    sleep 1
+    read_sleep 1
 
     if ls -s "$VARQUIVO"*.* >erro /dev/null 2>&1 ; then
 #   Arquivo encontrado no diretorio$
