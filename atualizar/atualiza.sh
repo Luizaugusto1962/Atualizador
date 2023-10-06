@@ -132,7 +132,7 @@ M01="Compactando os arquivos Anteriores"
 M03="Volta do(s) programa(s) Concluida(s)" 
 M04="Volta do(s) Arquivo(s) Concluida" 
 M05="Sistema nao e IsCOBOL" 
-M06="Sera criado mais um backup para o mesmo dia"  
+M06="Sera criado mais um backup para o periodo"  
 M07="Programa(s) a ser(em) atualizado(s) -"
 M08="Opcao Invalida"  
 M09="O programa tem que estar no diretorio"   
@@ -1445,7 +1445,7 @@ M62="Ja existe um backup em ""$DIRDEST"" nos ultimos dias."
     _ferramentas 
         elif [ "$CONT" = S ] || [ "$CONT" = s ] ; then
 
-#            Sera criado mais um backup para o mesmo dia
+#            Sera criado mais um backup para o periodo.
      _linha
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M06}+COLUMNS)/2)) "$M06" ;printf "%*s""${NORM}"
      _linha
@@ -1472,7 +1472,7 @@ _progresso () {
   echo -n "${YELLOW}"" Favor aguardar [""${NORM}"
   while true
   do
-    echo -n "${YELLOW}"".""${NORM}"
+    echo -n "${YELLOW}""#""${NORM}"
     sleep 5
   done
 }
@@ -1541,7 +1541,6 @@ M10="O backup de nome \"""$ARQ""\""
      while [[ "$ENVBASE" =~ [0-9] || -z "$ENVBASE" ]] ;do
      printf "
      \033c\033[10;10H${RED}Voce nao informou o nome do diretorio a enviado, saindo... ${NORM}%s\n" 
-
 _press    
      _ferramentas 
      done
@@ -1562,7 +1561,7 @@ M15="Backup enviado para a pasta, \"""$ENVBASE""\"."
      printf "%*s""${YELLOW}" ;printf "%*s\n" $(((${#M08}+COLUMNS)/2)) "$M08" ;printf "%*s""${NORM}"
      _linha  
     _ferramentas 
-   fi
+     fi
 } 
 
 #####################################
