@@ -1238,7 +1238,7 @@ _temps() {
          fi 
          for line in $arqs
          do
-           zip -m "$DIRDEST"/"$TEMPORARIOS-$ETIQUETATEMPO" "$DIR""$line"  >> "$LOG_LIMPA"
+           zip -m "$DIRDEST"/"$TEMPORARIOS-$ETIQUETATEMPO" $DIR$line  >> "$LOG_LIMPA"
          done
     
      #           Movendo arquivos Temporarios
